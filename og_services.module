@@ -1,0 +1,103 @@
+<?php
+
+
+function og_services_create_membership($uid, $gid) {
+  db_query("INSERT INTO {og_service} (test) VALUES ('create')");
+ // $primary_key = !empty($note->id) ? array('id') : NULL;
+  //drupal_write_record('note', $note, $primary_key);
+}
+
+function og_services_delete_membership($uid, $gid) {
+  db_query("INSERT INTO {og_service} (test) VALUES ('delete')");
+  // db_query("DELETE FROM {note} WHERE id=:id", array(
+  //   ':id' => $id,
+  // ));
+}
+
+
+/**
+ * Implements hook_services_resources().
+ */
+function og_services_services_resources() {
+  return array(
+    'og' => array(
+      'retrieve' => array(
+        'help' => 'Retrieves an OG membership record',
+        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
+        'callback' => '_og_services_retrieve',
+        'access callback' => '_og_services_access',
+        'access arguments' => array('view'),
+        'access arguments append' => TRUE,
+        'args' => array(
+          array(
+            'name' => 'id',
+            'type' => 'int',
+            'description' => 'The id of the note to get',
+            'source' => array('path' => '0'),
+            'optional' => FALSE,
+          ),
+        ),
+      ),
+      'create' => array(
+        'help' => 'Creates an OG membership entry',
+        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
+        'callback' => '_og_services_create',
+        'access arguments' => array('note resource create'),
+        'access arguments append' => FALSE,
+        'args' => array(
+          array(
+            'name' => 'data',
+            'type' => 'struct',
+            'description' => 'The note object',
+            'source' => 'data',
+            'optional' => FALSE,
+          ),
+        ),
+      ),
+      'update' => array(
+        'help' => 'Updates an OG membership entry',
+        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
+        'callback' => '_og_services_update',
+        'access callback' => '_og_services_access',
+        'access arguments' => array('update'),
+        'access arguments append' => TRUE,
+        'args' => array(
+          array(
+            'name' => 'id',
+            'type' => 'int',
+            'description' => 'The id of the node to update',
+            'source' => array('path' => '0'),
+            'optional' => FALSE,
+          ),
+          array(
+            'name' => 'data',
+            'type' => 'struct',
+            'description' => 'The note data object',
+            'source' => 'data',
+            'optional' => FALSE,
+          ),
+        ),
+      ),
+      'delete' => array(
+        'help' => 'Deletes an OG membership entry',
+        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
+        'callback' => '_og_services_delete',
+        'access callback' => '_og_services_access',
+        'access arguments' => array('delete'),
+        'access arguments append' => TRUE,
+        'args' => array(
+          array(
+            'name' => 'nid',
+            'type' => 'int',
+            'description' => 'The id of the note to delete',
+            'source' => array('path' => '0'),
+            'optional' => FALSE,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+
+//end
