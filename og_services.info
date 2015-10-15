@@ -1,0 +1,6 @@
+name = OG Service Resource
+description = Organic group resource
+core = 7.x
+package = Services - resources
+dependencies[] = services
+dependencies[] = og
