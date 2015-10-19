@@ -1,10 +1,19 @@
 <?php
 
+function og_services_permission() {
+  return array(
+    'og service import create' => array(
+      'title' => t('OG Services Create OG Entry'),
+      'description' => t('OG Services Create OG Entry.'),
+    ),
+  );
+}
 
 function og_services_create_membership($uid, $gid) {
   db_query("INSERT INTO {og_service} (test) VALUES ('create')");
  // $primary_key = !empty($note->id) ? array('id') : NULL;
   //drupal_write_record('note', $note, $primary_key);
+  print "dfgksjdfgdfgs";
 }
 
 function og_services_delete_membership($uid, $gid) {
@@ -21,34 +30,17 @@ function og_services_delete_membership($uid, $gid) {
 function og_services_services_resources() {
   return array(
     'og' => array(
-      'retrieve' => array(
-        'help' => 'Retrieves an OG membership record',
-        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
-        'callback' => '_og_services_retrieve',
-        'access callback' => '_og_services_access',
-        'access arguments' => array('view'),
-        'access arguments append' => TRUE,
-        'args' => array(
-          array(
-            'name' => 'id',
-            'type' => 'int',
-            'description' => 'The id of the note to get',
-            'source' => array('path' => '0'),
-            'optional' => FALSE,
-          ),
-        ),
-      ),
       'create' => array(
         'help' => 'Creates an OG membership entry',
         'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
         'callback' => '_og_services_create',
-        'access arguments' => array('note resource create'),
+        'access arguments' => array('og service import create'),
         'access arguments append' => FALSE,
         'args' => array(
           array(
             'name' => 'data',
             'type' => 'struct',
-            'description' => 'The note object',
+            'description' => 'The membership object',
             'source' => 'data',
             'optional' => FALSE,
           ),

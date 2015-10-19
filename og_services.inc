@@ -1,26 +1,29 @@
 <?php
 
 function _og_services_create($data) {
-  global $user;
+ // $user = user_load($data['uid']);
 
-  unset($data->id);
-  $data->uid = $user->uid;
-  $data->created = time();
-  $data->modified = time();
+  //find the matching node id based on the UUID:
+  $nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $data['uuid']))->fetchField();
 
-  if (!isset($data->subject)) {
-    return services_error('Missing note attribute subject', 406);
-  }
+  // make an entry into the groups for this user and this node.
+  _group_add($data['uid'], $nid);
 
-  if (!isset($data->note)) {
-    return services_error('Missing note attribute note', 406);
-  }
+}
 
-  og_services_write_note($data);
-  return (object)array(
-    'id' => $data->id,
-    'uri' => services_resource_uri(array('note', $data->id)),
-  );
+
+function _group_add($uid, $gid) {
+
+    $user = user_load($uid);
+
+    og_group('node', $gid, array(
+      "entity type" => "user",
+      "entity" => $user,
+      "membership type" => OG_MEMBERSHIP_TYPE_DEFAULT,
+    ));
+    // Changes the users role in the group (1 = non-member, 2 = member, 3 = administrator member)
+    og_role_grant('node', $gid, $user->uid, 2);
+
 }
 
 ?>
