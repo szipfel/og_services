@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @param $data
+ */
 function _og_services_create($data) {
 
   //find the matching node id based on the UUID:
@@ -7,11 +10,28 @@ function _og_services_create($data) {
   $nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $data['node_uuid']))->fetchField();
 
   // make an entry into the groups for this user and this node.
-  _group_add($uid, $nid);
+  _og_group_add($uid, $nid);
 
 }
 
-function _group_add($uid, $gid) {
+/**
+ * @param $data
+ * @return bool
+ */
+function _og_services_delete($data) {
+
+  $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $data['user_uuid']))->fetchField();
+
+ if(_og_group_remove($uid, $gid)) {
+   return TRUE;
+ }
+}
+
+/**
+ * @param $uid
+ * @param $gid
+ */
+function _og_group_add($uid, $gid) {
 
     $user = user_load($uid);
 
@@ -25,4 +45,20 @@ function _group_add($uid, $gid) {
 
 }
 
+/**
+ * Remove the organic group membership for user x from group id: y
+ *
+ * @param $uid The User ID of the user to revoke group membership from
+ * @param $gid The Node ID of the group that we are removing the user from .
+ * @return bool
+ */
+function _og_group_remove($uid, $gid) {
+
+  if(og_ungroup('node', $gid, $entity_type = 'user', $uid)) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+
+}
 ?>
