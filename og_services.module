@@ -35,30 +35,6 @@ function og_services_services_resources() {
             ),
           ),
         ),
-        'update' => array(
-          'help' => 'Updates an OG membership entry',
-          'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
-          'callback' => '_og_services_update',
-          'access callback' => '_og_services_access',
-          'access arguments' => array('update'),
-          'access arguments append' => TRUE,
-          'args' => array(
-            array(
-              'name' => 'id',
-              'type' => 'int',
-              'description' => 'The id of the node to update',
-              'source' => array('path' => '0'),
-              'optional' => FALSE,
-            ),
-            array(
-              'name' => 'data',
-              'type' => 'struct',
-              'description' => 'The note data object',
-              'source' => 'data',
-              'optional' => FALSE,
-            ),
-          ),
-        ),
         'delete' => array(
           'help' => 'Deletes an OG membership entries based on User UUID and Node UUID combination',
           'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
@@ -96,7 +72,6 @@ function _og_services_access($op = 'view', $args = array()) {
      // return user_access('save file information');
       return TRUE;
     case 'delete':
-      print "dsfsdfsf";
       return TRUE;
       break;
     case 'index':
