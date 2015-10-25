@@ -6,23 +6,12 @@ function og_services_permission() {
       'title' => t('OG Services Create OG Entry'),
       'description' => t('OG Services Create OG Entry.'),
     ),
+    'og service import delete' => array(
+      'title' => t('OG Services Delete OG Entry'),
+      'description' => t('OG Services Delete OG Entry.'),
+    ),
   );
 }
-
-function og_services_create_membership($uid, $gid) {
-  db_query("INSERT INTO {og_service} (test) VALUES ('create')");
- // $primary_key = !empty($note->id) ? array('id') : NULL;
-  //drupal_write_record('note', $note, $primary_key);
-  print "dfgksjdfgdfgs";
-}
-
-function og_services_delete_membership($uid, $gid) {
-  db_query("INSERT INTO {og_service} (test) VALUES ('delete')");
-  // db_query("DELETE FROM {note} WHERE id=:id", array(
-  //   ':id' => $id,
-  // ));
-}
-
 
 /**
  * Implements hook_services_resources().
@@ -30,64 +19,93 @@ function og_services_delete_membership($uid, $gid) {
 function og_services_services_resources() {
   return array(
     'og' => array(
-      'create' => array(
-        'help' => 'Creates an OG membership entry',
-        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
-        'callback' => '_og_services_create',
-        'access arguments' => array('og service import create'),
-        'access arguments append' => FALSE,
-        'args' => array(
-          array(
-            'name' => 'data',
-            'type' => 'struct',
-            'description' => 'The membership object',
-            'source' => 'data',
-            'optional' => FALSE,
+        'create' => array(
+          'help' => 'Creates an OG membership entry',
+          'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
+          'callback' => '_og_services_create',
+          'access callback' => '_og_services_access',
+          'access arguments' => array('create'),
+          'args' => array(
+            array(
+              'name' => 'data',
+              'type' => 'struct',
+              'description' => 'The membership object',
+              'source' => 'data',
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+        'update' => array(
+          'help' => 'Updates an OG membership entry',
+          'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
+          'callback' => '_og_services_update',
+          'access callback' => '_og_services_access',
+          'access arguments' => array('update'),
+          'access arguments append' => TRUE,
+          'args' => array(
+            array(
+              'name' => 'id',
+              'type' => 'int',
+              'description' => 'The id of the node to update',
+              'source' => array('path' => '0'),
+              'optional' => FALSE,
+            ),
+            array(
+              'name' => 'data',
+              'type' => 'struct',
+              'description' => 'The note data object',
+              'source' => 'data',
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+        'delete' => array(
+          'help' => 'Deletes an OG membership entries based on User UUID and Node UUID combination',
+          'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
+          'callback' => '_og_services_delete',
+          'access callback' => '_og_services_access',
+          'access arguments' => array('delete'),
+          'args' => array(
+            array(
+              'name' => 'id',
+              'type' => 'int',
+              'description' => 'The id of the GROUP to update',
+              'source' => array('path' => '0'),
+              'optional' => FALSE,
+            ),
           ),
         ),
       ),
-      'update' => array(
-        'help' => 'Updates an OG membership entry',
-        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
-        'callback' => '_og_services_update',
-        'access callback' => '_og_services_access',
-        'access arguments' => array('update'),
-        'access arguments append' => TRUE,
-        'args' => array(
-          array(
-            'name' => 'id',
-            'type' => 'int',
-            'description' => 'The id of the node to update',
-            'source' => array('path' => '0'),
-            'optional' => FALSE,
-          ),
-          array(
-            'name' => 'data',
-            'type' => 'struct',
-            'description' => 'The note data object',
-            'source' => 'data',
-            'optional' => FALSE,
-          ),
-        ),
-      ),
-      'delete' => array(
-        'help' => 'Deletes an OG membership entry',
-        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
-        'callback' => '_og_services_delete',
-        'access arguments' => array('og service import delete'),
-        'access arguments append' => FALSE,
-        'args' => array(
-          array(
-            'name' => 'data',
-            'type' => 'struct',
-            'description' => 'The membership object',
-            'source' => 'data',
-            'optional' => FALSE,
-          ),
-        ),
-      ),
-    ),
   );
+}
+
+
+/**
+ * Access check callback for file controllers.
+ */
+function _og_services_access($op = 'view', $args = array()) {
+  switch ($op) {
+    case 'view':
+      if (user_access('get any binary files')) {
+        return TRUE;
+      }
+      return $file->uid == $user->uid && user_access('get own binary files');
+      break;
+    case 'create':
+      print "create";
+     // return user_access('save file information');
+      return TRUE;
+    case 'delete':
+      print "dsfsdfsf";
+      return TRUE;
+      break;
+    case 'index':
+      if (user_access('get any binary files')) {
+        return TRUE;
+      }
+  }
+
+  return FALSE;
 }
 
 

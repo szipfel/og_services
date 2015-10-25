@@ -4,7 +4,7 @@
  * @param $data
  */
 function _og_services_create($data) {
-
+print_r($data);
   //find the matching node id based on the UUID:
   $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $data['user_uuid']))->fetchField();
   $nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $data['node_uuid']))->fetchField();
@@ -19,12 +19,13 @@ function _og_services_create($data) {
  * @return bool
  */
 function _og_services_delete($data) {
+print_r($data);
+  print "======= sd=fsdf sdf=======";
+  //$uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $data['user_uuid']))->fetchField();
 
-  $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $data['user_uuid']))->fetchField();
-
- if(_og_group_remove($uid, $gid)) {
+ //if(_og_group_remove($uid, $gid)) {
    return TRUE;
- }
+ //}
 }
 
 /**
@@ -52,6 +53,7 @@ function _og_group_add($uid, $gid) {
  * @param $gid The Node ID of the group that we are removing the user from .
  * @return bool
  */
+/*
 function _og_group_remove($uid, $gid) {
 
   if(og_ungroup('node', $gid, $entity_type = 'user', $uid)) {
@@ -61,4 +63,5 @@ function _og_group_remove($uid, $gid) {
   }
 
 }
+*/
 ?>
