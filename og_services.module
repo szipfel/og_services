@@ -62,22 +62,20 @@ function og_services_services_resources() {
 function _og_services_access($op = 'view', $args = array()) {
   switch ($op) {
     case 'view':
-      if (user_access('get any binary files')) {
-        return TRUE;
-      }
-      return $file->uid == $user->uid && user_access('get own binary files');
       break;
     case 'create':
-      print "create";
+     // print "create";
      // return user_access('save file information');
       return TRUE;
     case 'delete':
       return TRUE;
       break;
     case 'index':
-      if (user_access('get any binary files')) {
-        return TRUE;
-      }
+      return TRUE;
+    break;
+    default:
+      return FALSE;
+    break;
   }
 
   return FALSE;
