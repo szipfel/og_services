@@ -11,6 +11,7 @@ function _og_services_create($data) {
 
     //find the matching node id based on the UUID:
     if(!$uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $data['user_uuid']))->fetchField()) {
+      http_response_code(400);
       $result['status'] = "400";
       $result['message'] = "Could not find the user with uuid " . $data['user_uuid'];
       print json_encode($result);
