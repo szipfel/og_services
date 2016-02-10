@@ -59,27 +59,34 @@ function og_services_services_resources() {
 /**
  * Access check callback for file controllers.
  */
+
 function _og_services_access($op = 'view', $args = array()) {
   switch ($op) {
-    case 'view':
-      break;
-    case 'create':
-     // print "create";
-     // return user_access('save file information');
-      return TRUE;
-    case 'delete':
-      return TRUE;
-      break;
-    case 'index':
-      return TRUE;
+    case 'view': // NOT USED
+      return FALSE;
     break;
-    default:
+    case 'create':
+      if(user_access('og service import create')) {
+        return TRUE;
+      } else {
+        return FALSE;
+      }
+    break;
+    case 'delete':
+      if(user_access('og service import delete')) {
+        return TRUE;
+      } else {
+        return FALSE;
+      }
+    break;
+    case 'index': // NOT USED
       return FALSE;
     break;
   }
 
   return FALSE;
 }
+
 
 
 //end
