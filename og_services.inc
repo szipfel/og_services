@@ -112,4 +112,34 @@ function _og_group_remove($uid, $gid) {
 
 }
 
+function _og_services_retrieve($data){
+  $result = array();
+  $items = explode(':', $data);
+
+  $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $items[0]))->fetchField();
+  $nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $items[1]))->fetchField();
+  print $nid . " || " . $uid;
+  if(($uid != NULL) && ($nid != NULL)) {
+    if (og_is_member('node', $nid, 'user', $uid)) { // are they actually a member?
+      http_response_code(200);
+      $result['status'] = "200";
+      $result['message'] = "true";
+      print json_encode($result);
+      return;
+    } else {
+      http_response_code(200);
+      $result['status'] = "200";
+      $result['message'] = "false";
+      print json_encode($result);
+      return;
+    }
+  } else {
+    http_response_code(400);
+    $result['status'] = "400";
+    $result['message'] = "Missing Data";
+    print json_encode($result);
+    return;
+  }
+}
+
 ?>

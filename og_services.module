@@ -1,5 +1,12 @@
 <?php
+/**
+ * synopsis: 
+ */
 
+
+/**
+ * @return array
+ */
 function og_services_permission() {
   return array(
     'og service import create' => array(
@@ -9,6 +16,10 @@ function og_services_permission() {
     'og service import delete' => array(
       'title' => t('OG Services Delete OG Entry'),
       'description' => t('OG Services Delete OG Entry.'),
+    ),
+    'og service import retrieve' => array(
+      'title' => t('OG Services Retrieve / Validate OG Entry'),
+      'description' => t('OG Services Retrieve / Validate OG Entry.'),
     ),
   );
 }
@@ -51,6 +62,22 @@ function og_services_services_resources() {
             ),
           ),
         ),
+      'retrieve' => array(
+        'help' => 'Returns TRUE or FALSE on validation of group membership based on User UUID and Node UUID combination',
+        'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
+        'callback' => '_og_services_retrieve',
+        'access callback' => '_og_services_access',
+        'access arguments' => array('retrieve'),
+        'args' => array(
+          array(
+            'name' => 'id',
+            'type' => 'int',
+            'description' => 'The id of the GROUP to update',
+            'source' => array('path' => '0'),
+            'optional' => FALSE,
+          ),
+        ),
+      ),
       ),
   );
 }
@@ -79,6 +106,13 @@ function _og_services_access($op = 'view', $args = array()) {
         return FALSE;
       }
     break;
+    case 'retrieve':
+      if(user_access('og service import retrieve')) {
+        return TRUE;
+      } else {
+        return FALSE;
+      }
+      break;
     case 'index': // NOT USED
       return FALSE;
     break;
