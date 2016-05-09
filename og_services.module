@@ -1,8 +1,7 @@
 <?php
 /**
- * synopsis: 
+ * synopsis:
  */
-
 
 /**
  * @return array
@@ -70,9 +69,9 @@ function og_services_services_resources() {
         'access arguments' => array('retrieve'),
         'args' => array(
           array(
-            'name' => 'id',
-            'type' => 'int',
-            'description' => 'The id of the GROUP to update',
+            'name' => 'data',
+            'type' => 'struct',
+            'description' => 'The membership items',
             'source' => array('path' => '0'),
             'optional' => FALSE,
           ),

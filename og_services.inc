@@ -8,23 +8,17 @@ function _og_services_create($data) {
   $result['result'] = 'false';
 
   if(isset($data['user_uuid']) && isset($data['node_uuid'])) {
-
     //find the matching node id based on the UUID:
     if(!$uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $data['user_uuid']))->fetchField()) {
       http_response_code(400);
       $result['status'] = "400";
       $result['message'] = "Could not find the user with uuid " . $data['user_uuid'];
-      print json_encode($result);
-      return;
     }
     if(!$nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $data['node_uuid']))->fetchField()) {
       http_response_code(400);
       $result['status'] = "400";
       $result['message'] = "Could not find the node with uuid " . $data['node_uuid'];
-      print json_encode($result);
-      return;
     }
-
     // make an entry into the groups for this user and this node.
     if(isset($uid) && isset($nid)) {
       if (_og_group_add($uid, $nid)) {
@@ -34,20 +28,15 @@ function _og_services_create($data) {
       http_response_code(400);
       $result['status'] = "400";
       $result['message'] = "Missing Data";
-      print json_encode($result);
-      return;
     }
 
   } else {
     http_response_code(400);
     $result['status'] = "400";
     $result['message'] = "Missing Data";
-    print json_encode($result);
-    return;
   }
-  print json_encode($result);
-  return;
-  http_response_code(200);
+
+  return $result;
 }
 
 /**
@@ -82,16 +71,6 @@ function _og_group_add($uid, $gid) {
   } else {
     return FALSE;
   }
-/*
-  // Changes the users role in the group (1 = non-member, 2 = member, 3 = administrator member)
-  if(og_role_grant('node', $gid, $user->uid, 2)) {
-    print "stuff - true";
-    return TRUE;
-  } else {
-    print "stuff - false";
-    return FALSE;
-  }
-*/
 }
 
 /**
@@ -118,27 +97,23 @@ function _og_services_retrieve($data){
 
   $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $items[0]))->fetchField();
   $nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $items[1]))->fetchField();
-  print $nid . " || " . $uid;
   if(($uid != NULL) && ($nid != NULL)) {
     if (og_is_member('node', $nid, 'user', $uid)) { // are they actually a member?
       http_response_code(200);
       $result['status'] = "200";
       $result['message'] = "true";
-      print json_encode($result);
-      return;
+      return $result;
     } else {
       http_response_code(200);
       $result['status'] = "200";
       $result['message'] = "false";
-      print json_encode($result);
-      return;
+      return $result;
     }
   } else {
     http_response_code(400);
     $result['status'] = "400";
     $result['message'] = "Missing Data";
-    print json_encode($result);
-    return;
+    return $result;
   }
 }
 
