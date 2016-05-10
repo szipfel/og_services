@@ -10,12 +10,10 @@ function _og_services_create($data) {
   if(isset($data['user_uuid']) && isset($data['node_uuid'])) {
     //find the matching node id based on the UUID:
     if(!$uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $data['user_uuid']))->fetchField()) {
-      http_response_code(400);
       $result['status'] = "400";
       $result['message'] = "Could not find the user with uuid " . $data['user_uuid'];
     }
     if(!$nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $data['node_uuid']))->fetchField()) {
-      http_response_code(400);
       $result['status'] = "400";
       $result['message'] = "Could not find the node with uuid " . $data['node_uuid'];
     }
@@ -25,13 +23,11 @@ function _og_services_create($data) {
         $result['result'] = 'true';
       }
     } else {
-      http_response_code(400);
       $result['status'] = "400";
       $result['message'] = "Missing Data";
     }
 
   } else {
-    http_response_code(400);
     $result['status'] = "400";
     $result['message'] = "Missing Data";
   }
@@ -99,22 +95,17 @@ function _og_services_retrieve($data){
   $nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $items[1]))->fetchField();
   if(($uid != NULL) && ($nid != NULL)) {
     if (og_is_member('node', $nid, 'user', $uid)) { // are they actually a member?
-      http_response_code(200);
       $result['status'] = "200";
       $result['message'] = "true";
-      return $result;
     } else {
-      http_response_code(200);
       $result['status'] = "200";
       $result['message'] = "false";
-      return $result;
     }
   } else {
-    http_response_code(400);
     $result['status'] = "400";
     $result['message'] = "Missing Data";
-    return $result;
   }
+   return $result;
 }
 
 ?>
