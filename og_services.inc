@@ -88,19 +88,40 @@ function _og_group_remove($uid, $gid) {
 }
 
 function _og_services_retrieve($data){
+  global $language;
   $result = array();
   $items = explode(':', $data);
 
-  $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $items[0]))->fetchField();
-  $nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $items[1]))->fetchField();
-  if(($uid != NULL) && ($nid != NULL)) {
-    if (og_is_member('node', $nid, 'user', $uid)) { // are they actually a member?
-      $result['status'] = "200";
-      $result['message'] = "true";
-    } else {
-      $result['status'] = "200";
-      $result['message'] = "false";
+  // If node ID is not set then return all available reports for the provided user.
+  if (isset($items[1]) && isset($items[0])) {
+    $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $items[0]))->fetchField();
+    $nid = db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $items[1]))->fetchField();
+    if (($uid != NULL) && ($nid != NULL)) {
+      if (og_is_member('node', $nid, 'user', $uid)) { // are they actually a member?
+        $result['status'] = "200";
+        $result['message'] = "true";
+      }
+      else {
+        $result['status'] = "200";
+        $result['message'] = "false";
+      }
     }
+    else {
+      $result['status'] = "400";
+      $result['message'] = "Missing Data";
+    }
+  } else if (!isset($items[1]) && isset($items[0])) {
+    $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $items[0]))->fetchField();
+    $user = user_load($uid);
+    foreach($user->og_user_node[LANGUAGE_NONE] as $key => $value) {
+      $node = node_load(array_shift(array_values($value)));
+      if(isset($node->field_form_code[LANGUAGE_NONE][0]['value']) && ($node->status == 1)) {
+        $local[$node->field_external_id[LANGUAGE_NONE][0]['value']] = $node->field_form_code[LANGUAGE_NONE][0]['value'] . ' - ' .  $node->title_field[$language->language][0]['value'];
+      }
+    }
+
+    $result['status'] = "200";
+    $result['message'] = $local;
   } else {
     $result['status'] = "400";
     $result['message'] = "Missing Data";
