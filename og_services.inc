@@ -111,17 +111,17 @@ function _og_services_retrieve($data){
       $result['message'] = "Missing Data";
     }
   } else if (!isset($items[1]) && isset($items[0])) {
+    $og_memberships = array();
     $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $items[0]))->fetchField();
     $user = user_load($uid);
     foreach($user->og_user_node[LANGUAGE_NONE] as $key => $value) {
       $node = node_load(array_shift(array_values($value)));
-      if(isset($node->field_form_code[LANGUAGE_NONE][0]['value']) && ($node->status == 1)) {
-        $local[$node->field_external_id[LANGUAGE_NONE][0]['value']] = $node->field_form_code[LANGUAGE_NONE][0]['value'] . ' - ' .  $node->title_field[$language->language][0]['value'];
-      }
+      // send a list of UUIDs that represent the groups the user belongs to.
+      $og_memberships[] = $node->uuid;
     }
 
     $result['status'] = "200";
-    $result['message'] = $local;
+    $result['message'] = $og_memberships;
   } else {
     $result['status'] = "400";
     $result['message'] = "Missing Data";
