@@ -46,7 +46,7 @@ function og_services_services_resources() {
           ),
         ),
         'delete' => array(
-          'help' => 'Deletes an OG membership entries based on User UUID and Node UUID combination',
+          'help' => 'Deletes an OG membership entries based on User UUID and Node UUID combination or if only User UUID provided all users group memberships will be revoked (deleted)',
           'file' => array('type' => 'inc', 'module' => 'og_services', 'name' => 'og_services'),
           'callback' => '_og_services_delete',
           'access callback' => '_og_services_access',

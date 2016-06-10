@@ -45,8 +45,15 @@ function _og_services_delete($data) {
 
   $uid = db_query("SELECT uid FROM {users} WHERE uuid = :uuid", array(':uuid' => $items[0]))->fetchField();
   $nid= db_query("SELECT nid FROM {node} WHERE uuid = :uuid", array(':uuid' => $items[1]))->fetchField();
-
-  _og_group_remove($uid, $nid);
+  if($uid > 1 && $nid > 0) {
+    return _og_group_remove($uid, $nid);
+  } else if ($uid > 0 && !$nid) {
+    return _og_group_remove_all($uid);
+  } else {
+    $result['status'] = "400";
+    $result['message'] = "Missing Data";
+    return $result;
+  }
 
 }
 
@@ -78,12 +85,25 @@ function _og_group_add($uid, $gid) {
  */
 
 function _og_group_remove($uid, $gid) {
-
+  
   if(og_ungroup('node', $gid, $entity_type = 'user', $uid)) {
     return TRUE;
   } else {
     return FALSE;
   }
+
+}
+
+function _og_group_remove_all($uid) {
+$result = array();
+  $delete = db_delete('og_membership')
+    ->condition('etid', $uid)
+    ->condition('entity_type', 'user')
+    ->execute();
+
+    $result['status'] = "200";
+    $result['message'] = $delete . " memberships revoked";
+    return $result;
 
 }
 
